@@ -1,0 +1,40 @@
+services:
+  django:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: touch-typing-django
+    restart: unless-stopped
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      INTERNAL_API_SECRET: ${INTERNAL_API_SECRET}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      DJANGO_DEBUG: "0"
+      DJANGO_ALLOWED_HOSTS: django,localhost,127.0.0.1
+      DJANGO_DATABASE_PATH: /data/prod.db
+      ALPHABET_PATH: /app/alphabet/main.txt
+    volumes:
+      - touch-typing-sqlite:/data
+      - ./alphabet:/app/alphabet:ro
+
+  touch-typing-tutor:
+    image: touch-typing-tutor:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: touch-typing-tutor
+    restart: unless-stopped
+    depends_on:
+      - django
+    ports:
+      - "${DEPLOY_PORT:-8671}:3000"
+    environment:
+      DJANGO_API_URL: http://django:8000
+      INTERNAL_API_SECRET: ${INTERNAL_API_SECRET}
+      AUTH_SECRET: ${AUTH_SECRET}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      AUTH_URL: ${AUTH_URL}
+      INVESTOR_CONTACT_EMAIL: ${INVESTOR_CONTACT_EMAIL:-investors@example.com}
+
+volumes:
+  touch-typing-sqlite:
