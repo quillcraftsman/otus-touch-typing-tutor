@@ -29,6 +29,8 @@ describe("TypingExercise", () => {
         currentLevel={1}
         maxLevel={3}
         courseCompleted={false}
+        levelErrorCount={0}
+        onTypingError={vi.fn()}
         onLevelAdvance={onLevelAdvance}
         onCourseCompleted={onCourseCompleted}
       />,
@@ -42,6 +44,45 @@ describe("TypingExercise", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows the level error count beside the input", () => {
+    render(
+      <TypingExercise
+        alphabet="jfk"
+        currentLevel={1}
+        maxLevel={3}
+        courseCompleted={false}
+        levelErrorCount={4}
+        onTypingError={vi.fn()}
+        onLevelAdvance={onLevelAdvance}
+        onCourseCompleted={onCourseCompleted}
+      />,
+    );
+
+    expect(screen.getByText("Ошибки: 4")).toBeInTheDocument();
+  });
+
+  it("records a typing error", async () => {
+    const user = userEvent.setup();
+    const onTypingError = vi.fn();
+    render(
+      <TypingExercise
+        alphabet="jfk"
+        currentLevel={1}
+        maxLevel={3}
+        courseCompleted={false}
+        levelErrorCount={1}
+        onTypingError={onTypingError}
+        onLevelAdvance={onLevelAdvance}
+        onCourseCompleted={onCourseCompleted}
+      />,
+    );
+
+    await user.type(screen.getByLabelText("Поле ввода упражнения"), "x");
+
+    expect(onTypingError).toHaveBeenCalledOnce();
+    expect(screen.getByText("Ошибки: 1")).toBeInTheDocument();
+  });
+
   it("resets input on error", async () => {
     const user = userEvent.setup();
     render(
@@ -50,6 +91,8 @@ describe("TypingExercise", () => {
         currentLevel={1}
         maxLevel={3}
         courseCompleted={false}
+        levelErrorCount={0}
+        onTypingError={vi.fn()}
         onLevelAdvance={onLevelAdvance}
         onCourseCompleted={onCourseCompleted}
       />,
@@ -77,6 +120,8 @@ describe("TypingExercise", () => {
         currentLevel={1}
         maxLevel={3}
         courseCompleted={false}
+        levelErrorCount={0}
+        onTypingError={vi.fn()}
         onLevelAdvance={onLevelAdvance}
         onCourseCompleted={onCourseCompleted}
       />,
@@ -99,6 +144,8 @@ describe("TypingExercise", () => {
         currentLevel={1}
         maxLevel={3}
         courseCompleted={false}
+        levelErrorCount={0}
+        onTypingError={vi.fn()}
         onLevelAdvance={onLevelAdvance}
         onCourseCompleted={onCourseCompleted}
       />,
@@ -119,6 +166,8 @@ describe("TypingExercise", () => {
         currentLevel={3}
         maxLevel={3}
         courseCompleted={false}
+        levelErrorCount={0}
+        onTypingError={vi.fn()}
         onLevelAdvance={onLevelAdvance}
         onCourseCompleted={onCourseCompleted}
       />,
@@ -140,6 +189,8 @@ describe("TypingExercise", () => {
         currentLevel={1}
         maxLevel={3}
         courseCompleted={false}
+        levelErrorCount={0}
+        onTypingError={vi.fn()}
         onLevelAdvance={onLevelAdvance}
         onCourseCompleted={onCourseCompleted}
       />,
@@ -159,6 +210,8 @@ describe("TypingExercise", () => {
         currentLevel={1}
         maxLevel={3}
         courseCompleted={false}
+        levelErrorCount={0}
+        onTypingError={vi.fn()}
         onLevelAdvance={onLevelAdvance}
         onCourseCompleted={onCourseCompleted}
       />,
@@ -178,6 +231,8 @@ describe("TypingExercise", () => {
         currentLevel={3}
         maxLevel={3}
         courseCompleted={true}
+        levelErrorCount={0}
+        onTypingError={vi.fn()}
         onLevelAdvance={onLevelAdvance}
         onCourseCompleted={onCourseCompleted}
       />,
@@ -199,6 +254,8 @@ describe("TypingExercise", () => {
         currentLevel={1}
         maxLevel={3}
         courseCompleted={false}
+        levelErrorCount={0}
+        onTypingError={vi.fn()}
         onLevelAdvance={onLevelAdvance}
         onCourseCompleted={onCourseCompleted}
       />,

@@ -29,6 +29,7 @@ class User(AbstractBaseUser):
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=10, choices=Role.choices, default=Role.USER)
     current_level = models.PositiveIntegerField(default=1)
+    level_error_count = models.PositiveIntegerField(default=0)
     course_completed_at = models.DateTimeField(null=True, blank=True)
     waitlist_joined_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

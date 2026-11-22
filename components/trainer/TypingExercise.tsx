@@ -19,6 +19,8 @@ type TypingExerciseProps = {
   currentLevel: number;
   maxLevel: number;
   courseCompleted: boolean;
+  levelErrorCount: number;
+  onTypingError: () => void;
   onLevelAdvance: (nextLevel: number, markCourseCompleted: boolean) => Promise<void>;
   onCourseCompleted: () => void;
 };
@@ -30,6 +32,8 @@ export function TypingExercise({
   currentLevel,
   maxLevel,
   courseCompleted,
+  levelErrorCount,
+  onTypingError,
   onLevelAdvance,
   onCourseCompleted,
 }: TypingExerciseProps) {
@@ -67,6 +71,7 @@ export function TypingExercise({
     }
 
     if (nextChar !== expectedChar) {
+      onTypingError();
       setErrorAnimation(true);
       setStatus("error");
       setInput("");
@@ -135,7 +140,12 @@ export function TypingExercise({
         )}
       >
         <CardHeader>
-          <CardTitle>Ваш ввод</CardTitle>
+          <div className="flex items-center justify-between gap-4">
+            <CardTitle>Ваш ввод</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Ошибки: {levelErrorCount}
+            </p>
+          </div>
           <CardDescription>
             {status === "error"
               ? "Ошибка! Начните упражнение заново."

@@ -134,6 +134,7 @@ describe("app pages", () => {
       currentLevel: 1,
       courseCompletedAt: null,
       maxLevel: 3,
+      levelErrorCount: 0,
     });
 
     const TrainerPage = (await import("@/app/trainer/page")).default;

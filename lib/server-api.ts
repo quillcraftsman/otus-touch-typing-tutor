@@ -14,6 +14,7 @@ export type ProgressDto = {
   currentLevel: number;
   courseCompletedAt: string | null;
   maxLevel: number;
+  levelErrorCount: number;
 };
 
 export async function getCurrentUser(userId: string): Promise<CurrentUserDto | null> {

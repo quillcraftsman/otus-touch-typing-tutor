@@ -79,6 +79,39 @@ describe("progress route", () => {
     expect(response.status).toBe(401);
   });
 
+  it("PATCH records a typing error", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } });
+    mockUserFetch.mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          currentLevel: 1,
+          courseCompletedAt: null,
+          maxLevel: 3,
+          levelErrorCount: 1,
+        }),
+        { status: 200 },
+      ),
+    );
+
+    const { PATCH } = await import("@/app/api/progress/route");
+    const response = await PATCH(
+      new Request("http://localhost/api/progress", {
+        method: "PATCH",
+        body: JSON.stringify({ recordError: true }),
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(mockUserFetch).toHaveBeenCalledWith(
+      "user-1",
+      "/api/v1/progress/",
+      expect.objectContaining({
+        method: "PATCH",
+        body: JSON.stringify({ recordError: true }),
+      }),
+    );
+  });
+
   it("PATCH updates progress", async () => {
     mockAuth.mockResolvedValue({ user: { id: "user-1" } });
     mockUserFetch.mockResolvedValue(
