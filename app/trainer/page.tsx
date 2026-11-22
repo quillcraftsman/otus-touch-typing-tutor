@@ -37,6 +37,7 @@ export default async function TrainerPage() {
         initialLevel={clampLevel(user.currentLevel, maxLevel)}
         maxLevel={maxLevel}
         initialCourseCompleted={Boolean(user.courseCompletedAt)}
+        initialLevelErrorCount={user.levelErrorCount}
       />
     </div>
   );

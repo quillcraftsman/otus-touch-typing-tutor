@@ -23,10 +23,20 @@ export const registerSchema = z.object({
   password: z.string().min(6, "Пароль должен быть не короче 6 символов"),
 });
 
-export const patchSchema = z.object({
-  currentLevel: z.number().int().positive(),
-  markCourseCompleted: z.boolean().optional(),
-});
+const levelPatchSchema = z
+  .object({
+    currentLevel: z.number().int().positive(),
+    markCourseCompleted: z.boolean().optional(),
+  })
+  .strict();
+
+const errorPatchSchema = z
+  .object({
+    recordError: z.literal(true),
+  })
+  .strict();
+
+export const patchSchema = z.union([errorPatchSchema, levelPatchSchema]);
 
 export const analyticsEventSchema = z.object({
   eventType: analyticsEventTypeSchema,

@@ -24,6 +24,10 @@ describe("validation schemas", () => {
         markCourseCompleted: true,
       }).success,
     ).toBe(true);
+    expect(patchSchema.safeParse({ recordError: true }).success).toBe(true);
+    expect(
+      patchSchema.safeParse({ currentLevel: 2, recordError: true }).success,
+    ).toBe(false);
   });
 
   it("validates analytics event payload", () => {

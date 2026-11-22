@@ -23,13 +23,21 @@ vi.mock("@/components/trainer/LevelSelector", () => ({
 
 vi.mock("@/components/trainer/TypingExercise", () => ({
   TypingExercise: ({
+    levelErrorCount,
     onCourseCompleted,
     onLevelAdvance,
+    onTypingError,
   }: {
+    levelErrorCount: number;
     onCourseCompleted: () => void;
     onLevelAdvance: (level: number, markCourseCompleted: boolean) => Promise<void>;
+    onTypingError: () => void;
   }) => (
     <div>
+      <p>Ошибки: {levelErrorCount}</p>
+      <button type="button" onClick={onTypingError}>
+        Record typing error
+      </button>
       <button type="button" onClick={onCourseCompleted}>
         Complete course locally
       </button>
@@ -53,6 +61,7 @@ describe("TrainerClient", () => {
         json: async () => ({
           currentLevel: 2,
           courseCompletedAt: null,
+          levelErrorCount: 0,
         }),
       }),
     );
@@ -65,10 +74,12 @@ describe("TrainerClient", () => {
         initialLevel={1}
         maxLevel={3}
         initialCourseCompleted={false}
+        initialLevelErrorCount={0}
       />,
     );
 
     expect(screen.getByText("Level Selector")).toBeInTheDocument();
+    expect(screen.getByText("Ошибки: 0")).toBeInTheDocument();
   });
 
   it("shows course complete banner when completed", () => {
@@ -184,6 +195,101 @@ describe("TrainerClient", () => {
     );
 
     expect(screen.getByText("Курс завершён!")).toBeInTheDocument();
+  });
+
+  it("records a typing error and keeps the saved count", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          currentLevel: 1,
+          courseCompletedAt: null,
+          levelErrorCount: 2,
+        }),
+      }),
+    );
+
+    render(
+      <TrainerClient
+        alphabet="jfk"
+        initialLevel={1}
+        maxLevel={3}
+        initialCourseCompleted={false}
+        initialLevelErrorCount={1}
+      />,
+    );
+
+    await userEvent.setup().click(
+      screen.getByRole("button", { name: "Record typing error" }),
+    );
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith(
+        "/api/progress",
+        expect.objectContaining({
+          body: JSON.stringify({ recordError: true }),
+        }),
+      );
+      expect(screen.getByText("Ошибки: 2")).toBeInTheDocument();
+    });
+  });
+
+  it("restores the previous error count when recording fails", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+      }),
+    );
+
+    render(
+      <TrainerClient
+        alphabet="jfk"
+        initialLevel={1}
+        maxLevel={3}
+        initialCourseCompleted={false}
+        initialLevelErrorCount={3}
+      />,
+    );
+
+    await userEvent.setup().click(
+      screen.getByRole("button", { name: "Record typing error" }),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Ошибки: 3")).toBeInTheDocument();
+    });
+  });
+
+  it("shows zero errors after the level changes", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          currentLevel: 2,
+          courseCompletedAt: null,
+          levelErrorCount: 0,
+        }),
+      }),
+    );
+
+    render(
+      <TrainerClient
+        alphabet="jfk"
+        initialLevel={1}
+        maxLevel={3}
+        initialCourseCompleted={false}
+        initialLevelErrorCount={5}
+      />,
+    );
+
+    await capturedOnLevelChange?.(2);
+
+    await waitFor(() => {
+      expect(screen.getByText("Ошибки: 0")).toBeInTheDocument();
+    });
   });
 
   it("updates course completed state from api response", async () => {
