@@ -60,3 +60,11 @@
 - `backend-dev` реализует Django и свои unit-тесты строго в `backend/`. Фронтенд и спецификацию не меняет. Internal-эндпоинт проверяет `Authorization: Bearer <INTERNAL_API_SECRET>` и `X-User-Id`.
 - `frontend-dev` обновляет `types/`, BFF в `app/api/*`, `lib/`, UI и свои unit-тесты Vitest. Для internal-вызова берёт `session.user.id` и `djangoUserFetch`. `backend/` и спецификацию не меняет.
 - `qa-reviewer` сверяет код с контрактом, дополняет интеграционные и сложные граничные тесты и требует 100% покрытия backend. Бизнес-логику меняет только точечно, если код противоречит спецификации.
+
+## Инфраструктура
+
+Субагент `devops` не входит в цепочку реализации фичи. Его вызывают отдельно, когда меняются CI (`.github/workflows/*`), контейнеры (`Dockerfile`, `docker-compose*.yml`), `Makefile`, `scripts/*` или шаблон `.env.example`.
+
+- В CI обязательны `npm run lint`, `make test-frontend` и `make test-backend`. Backend-проверка падает, если покрытие ниже 100%. Python-линтер добавляется только если он уже настроен в репозитории.
+- `devops` не меняет бизнес-логику и тесты в `backend/`, `app/`, `components/`, `lib/` и `types/`. Конфигурацию сборки или пути к тестам там можно править только после явного согласия.
+- В репозиторий попадают только шаблоны переменных. Реальные секреты не записываются в workflow, скрипты и compose.
