@@ -47,4 +47,9 @@
 
 ## Спецификации
 
-Перед новой фичей субагент `architect` пишет `docs/specs/<feature-name>.md`. Реализация идёт по этой спецификации. Агент-архитектор не меняет рабочий код и тесты.
+Перед новой фичей субагент `architect` пишет `docs/specs/<feature-name>.md`. Дальше по этой спецификации работают `backend-dev` и `frontend-dev` (их можно запускать параллельно), затем `qa-reviewer`. Пока QA не подтвердил `make test-backend` и `make test-frontend`, фича не готова.
+
+- `architect` только пишет и правит `docs/specs/`. Рабочий код и тесты не меняет.
+- `backend-dev` реализует Django строго в `backend/`, без тестов, фронтенда и спецификации. Internal-эндпоинт проверяет `Authorization: Bearer <INTERNAL_API_SECRET>` и `X-User-Id`.
+- `frontend-dev` обновляет `types/`, BFF в `app/api/*`, `lib/` и UI. Для internal-вызова берёт `session.user.id` и `djangoUserFetch`. `backend/` и спецификацию не меняет.
+- `qa-reviewer` сверяет код с контрактом, дописывает pytest и Vitest и требует 100% покрытия backend. Бизнес-логику меняет только точечно, если код противоречит спецификации.
