@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root=$(git rev-parse --show-toplevel)
+cd "$root"
+
+mapfile -t files < <(git diff --cached --name-only --diff-filter=ACMR -- '*.py')
+backend_files=()
+for file in "${files[@]}"; do
+  case "$file" in
+    backend/*.py) backend_files+=("$file") ;;
+  esac
+done
+
+if [ "${#backend_files[@]}" -eq 0 ]; then
+  exit 0
+fi
+
+if [ -x "$root/.venv/bin/python" ]; then
+  python="$root/.venv/bin/python"
+elif command -v python3 >/dev/null 2>&1; then
+  python=python3
+else
+  python=python
+fi
+
+"$python" -m ruff check "${backend_files[@]}"

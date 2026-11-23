@@ -27,12 +27,13 @@ model: inherit
 В любом новом или изменённом workflow запускай:
 
 - `npm run lint` (ESLint через `next lint`)
+- `make lint-backend` (Ruff, конфиг в `pyproject.toml`)
 - `make test-frontend`
 - `make test-backend`
 
 `make test-backend` обязан падать, если покрытие ниже 100%. Порог задаёт `--cov-fail-under=100` в `backend/pytest.ini`. Не снижай его и не расширяй `omit` в `backend/.coveragerc`.
 
-Python-линтер добавляй в CI только если он уже настроен в репозитории. Сейчас его нет.
+Ruff уже подключён. Не отключай `make lint-backend` в CI и не убирай хук `.githooks/pre-commit`.
 
 `Makefile` вызывает `python`, которого на чистом CI может не быть. В workflow выставляй `PYTHON=python3` или ставь совместимый интерпретатор. Цели приложения без нужды не переписывай.
 
