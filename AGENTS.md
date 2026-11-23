@@ -36,6 +36,8 @@
 - `make test-backend` — pytest в `backend/`
 - `make test-frontend` — `npm test` (Vitest)
 - `make test` — оба набора
+- `make lint-backend` — Ruff в `backend/`
+- `make install` включает git-хук `.githooks/pre-commit`: перед коммитом Ruff проверяет изменённые файлы `backend/**/*.py`
 
 `make test-backend` обязан завершаться с кодом 0. Это и есть проверка покрытия.
 
@@ -65,6 +67,6 @@
 
 Субагент `devops` не входит в цепочку реализации фичи. Его вызывают отдельно, когда меняются CI (`.github/workflows/*`), контейнеры (`Dockerfile`, `docker-compose*.yml`), `Makefile`, `scripts/*` или шаблон `.env.example`.
 
-- В CI обязательны `npm run lint`, `make test-frontend` и `make test-backend`. Backend-проверка падает, если покрытие ниже 100%. Python-линтер добавляется только если он уже настроен в репозитории.
+- В CI обязательны `npm run lint`, `make lint-backend` (Ruff), `make test-frontend` и `make test-backend`. Backend-проверка падает, если покрытие ниже 100%.
 - `devops` не меняет бизнес-логику и тесты в `backend/`, `app/`, `components/`, `lib/` и `types/`. Конфигурацию сборки или пути к тестам там можно править только после явного согласия.
 - В репозиторий попадают только шаблоны переменных. Реальные секреты не записываются в workflow, скрипты и compose.

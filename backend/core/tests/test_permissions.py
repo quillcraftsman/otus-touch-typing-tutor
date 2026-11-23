@@ -1,7 +1,7 @@
 import pytest
 from rest_framework.test import APIRequestFactory
 
-from accounts.models import Role, User
+from accounts.models import Role
 from core.permissions import IsAdminRole
 
 

@@ -1,7 +1,6 @@
 import uuid
 
 import pytest
-from django.test import override_settings
 
 from accounts.models import Role
 

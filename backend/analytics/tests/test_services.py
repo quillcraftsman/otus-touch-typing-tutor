@@ -19,7 +19,6 @@ def test_calculate_rate_zero_denominator():
 
 @pytest.mark.django_db
 def test_get_daily_and_funnel(user):
-    now = timezone.now()
     AnalyticsEvent.objects.create(
         user=user,
         session_id="11111111-1111-1111-1111-111111111111",
